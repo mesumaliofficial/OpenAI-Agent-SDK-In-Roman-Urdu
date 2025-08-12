@@ -27,7 +27,7 @@ OpenAI kuch built-in hosted tools provide karta hai, jo OpenAIResponsesModel ka 
 
 - `FileSearchTool` Ye tool OpenAI ke Vector Store se documents dhoondhne mein madad karta hai. Agar aap ne kuch data store kar rakha ho (PDFs, policies, patterns waghera), to AI unko retrieve kar sakta hai.
 
-- ` ComputerTool` AI ko apke computer ka limited access deta hai — taake files ko access ya open kiya ja sake (controlled environment mein). 
+- ` ComputerTool` AI ko apke computer ka limited access deta hai, taky files ko access ya open kiya ja sake (controlled environment mein). 
 
 - `CodeInterpreterTool` AI ko code run karne ki ability deta hai, lekin ek safe sandboxed environment mein.
 Sandboxed environment ka matlab hai secure jagah jahan AI sirf limited access ke sath code chala sakta hai.
