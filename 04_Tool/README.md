@@ -14,7 +14,7 @@ Tool calling ka matlab hay jab AI kisi conversation ke waqt decide karta hay usy
 - **AI:** AI ny decide keya mujhy yahan weather Tool ki zaroorat hay.
 - **AI calls tool:** Fetch Weather
 - **Tool return:** {"temp": 33, "condition": "Cloudy"}
-- **AI Answer:** Karachi mausam cloudy hay aur temperature 33°C hay.
+- **AI Answer:** Karachi ka mausam cloudy hay aur temperature 33°C hay.
 
 ### 🔸Why do we need tool ?
 - LLMs ky pass live data nh hota hay is leye zaroorat parte hay.
@@ -61,9 +61,9 @@ async def main():
 Ap kisi bhi python function ko ek tool ki tarha use kar sakty hain Agent SDK usko khud automatically setup kardyga.
 
 - Tool ka naam wohi hoga jo function ko dengy.
-- Tool ka discription function ky docstring sy leye jata hay recommended hay lazmi dein.
-- Function ky aruguments se input schmea LLM khud ready karta hay.
-- har input ka discription docstring sy leya jata hay (agar disable na keya gaya ho).
+- Tool ki description function ky docstring sy le jati hay recommended hay lazmi dein.
+- Function ky aruguments se input schema LLM khud ready karta hay.
+- Har input ki description docstring sy le jati hay (agar disable na keya gaya ho).
 
 **is process mein:** 
 - inspect module: Ye Python ka built-in module hai jo function ke signature ka structure nikalta hai. (signature ka matlab function ka naam use arguments aur return type)
