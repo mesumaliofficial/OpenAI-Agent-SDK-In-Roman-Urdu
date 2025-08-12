@@ -66,9 +66,9 @@ Ap kisi bhi python function ko ek tool ki tarha use kar sakty hain Agent SDK usk
 - Har input ki description docstring sy le jati hay (agar disable na keya gaya ho).
 
 **is process mein:** 
-- inspect module: Ye Python ka built-in module hai jo function ke signature ka structure nikalta hai. (signature ka matlab function ka naam use arguments aur return type)
-- griffe: Tool ko yeh samajhne mein madad deta hai ke har field ka matlab kya hai.
-- pydantic: Ye ek library hai jo inputs ka data schema banata hai aur unki validation karta hai. for example: Agar koi user `amount="not_a_number"` bhej de, to `pydantic` kahega: ❌ “Yeh float number hona chahiye!”
+- inspect module: Ye Python ka built-in module hai jo function ke signature ka structure nikalta hai. (signature ka matlab hay, function ka naam, arguments aur return type)
+- griffe: Tool ko yeh samajhne mein help karta hay, keh har field ka matlab kya hai.
+- pydantic: Ye ek library hai jo inputs ka data schema banata hai aur unki validation karta hai. for example: Agar koi user `amount="not_a_number"` bhej de, tw `pydantic` kahega: ❌ “Yeh float number hona chahiye!”
 
 ```bash
 import json
