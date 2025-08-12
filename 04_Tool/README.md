@@ -222,11 +222,11 @@ tool = FunctionTool(
 ```
 
 ### 🔸Automatic argument and docstring parsing
-Jaise pehle bataya gaya, tool automatically function ka signature parse karta hai taake tool ke arguments ka schema ban sake, aur hum docstring parse karte hain taake LLM ko tool ki description mil saky.
+Jaise pehle bataya gaya, tool automatically function ka signature parse karta hai taky tool ke arguments ka schema ban sake, aur hum docstring parse karte hain taky LLM ko tool ki description mil saky.
 
-- `inspect module →` inspect Python ka built-in module hai jo function ya class ka structure read kar sakta hai. Iska use karke arguments ka naam aur type annotations extract kiye jate hain, aur unse dynamically ek Pydantic model banaya jata hai. Pydantic model data validation ke liye hota hai. yeh ensure karta hai ke jo data pass ho raha hai wo required schema ke mutabiq ho. Yeh parser zyada tar types ko support karta hai, including: Python primitives (str, int, bool, float), Pydantic models, TypedDicts, Aur complex nested types. 
+- `inspect module →` inspect Python ka built-in module hai jo function ya class ka structure read kar sakta hai. Iska use karke arguments ka naam aur type annotations extract kiye jaty hain, aur unse dynamically ek Pydantic model banaya jata hai. Pydantic model data validation ke liye hota hai. yeh ensure karta hai ke jo data pass ho raha hai wo required schema ke mutabiq ho. Yeh parser zyada tar types ko support karta hai, including: Python primitives (str, int, bool, float), Pydantic models, TypedDicts, Aur complex nested types. 
 
-- `griffe →` ek library hai jo Python code se docstrings read karke samajh sakti hai. Docstring ke 3 formats supported hain: Google style, Sphinx style, NumPy style. System koshish karta hai ke docstring ka format automatically detect kare, lekin hum isse manually bhi set kar sakte hain jab `function_tool` call karte hain. agar ap chahen tw Docstring parsing disable bhi kar sakty hain `use_docstring_info=False` set karky.
+- `griffe →` ek library hai jo Python code se docstrings read karky samajh sakti hay. Docstring ke teen formats supported hain: Google style, Sphinx style, NumPy style. System koshish karta hai ke docstring ka format automatically detect kare, lekin hum isse manually bhi set kar sakty hain jab `function_tool` call karty hain. agar ap chahen tw Docstring parsing disable bhi kar sakty hain `use_docstring_info=False` set karky.
 
 ### 🔸Agents as tools
 Normally jab hum ek agent sy dusry agent ko kam handoff karty hain tw control usky pass chala jata hay lekin kuch workflows me hum ye nh chahty ek central yani boss agent ho jo har spcialize agent sy kam karwaly lekin control apny pass rakhy.
