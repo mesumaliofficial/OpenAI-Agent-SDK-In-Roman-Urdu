@@ -1,7 +1,7 @@
 ## 🔹 Context Management
 Context ek overloaded term hay. (yani ye lafz diffrent jaga aur diffrent purposes ke liye use hota hai.). Context do main types ka hota hay:
 
-1\- **Local Context:** Ye wo data aur dependencies hain jo sirf apke code ke liye available hoti hain. Iska use aap:
+1\- **Local Context:** Ye wo data aur dependencies hain jo sirf apke code ke liye available hoti hain. Iska use ap:
 
 - Tool functions
 - `on_handoff`
@@ -9,7 +9,7 @@ Context ek overloaded term hay. (yani ye lafz diffrent jaga aur diffrent purpose
 
 wagera mein karty hain.
 
-**Important:** Ye data direct LLm ko nh jata. agar apny ye tool ky zariye pass keya ho tw LLm ko ye srf tool context mein hi milyga.
+**Important:** Ye data direct LLm ko nh jata. agar apny ye tool ky zariye pass keya ho tw LLM ko ye srf tool context mein hi milyga.
 
 2\- **LLM Context:** Ye wo context hay jo LLM response generate karty waqt dekhta hay:
 
@@ -17,7 +17,7 @@ wagera mein karty hain.
 - Conversation history
 - Instruction prompt
 
-LLM isi data ko use karke apna response generate karta hay.
+LLM isi data ko use karky apna response generate karta hay.
 
 
 ### 🔸 Context ka purpose ?
@@ -25,7 +25,7 @@ OpenAI SDK mein context ka role agent ko stateful banane ke liye hota hai. Iska 
 
 
 ### 🔸 Local Context
-Ye `RunContextWrapper` class aur isky andar mojood context property ky zariye represent keya jata hay. is ka kam karny ka tareqa ye hay:
+Ye `RunContextWrapper` class aur isky andar mojud context property ky zariye represent keya jata hay. is ka kam karny ka tareqa ye hay:
 
 - Ap koi bhi python object bana sakty hain jo ap chahen, common tareqa ye hay dataclass ya pydantic ka use karen.
 
@@ -51,7 +51,7 @@ Maan lo LLM ne bola: "User ka current balance check karo".
 - Tool function in dono ka use karke database se balance fetch karta hai.
 - LLM ko sirf final result milta hai: "Your balance is $150"
 
-**Note:**Context object LLM ko nh bheja jata. ye sirf ek local object hota hay jo ap read/write kar sakty hain aur is per methods call kar sakty hain.
+**Note:** Context object LLM ko nh bheja jata. ye sirf ek local object hota hay jo ap read/write kar sakty hain aur is per methods call kar sakty hain.
 
 ```python
 import asyncio
@@ -94,20 +94,35 @@ if __name__ == "__main__":
 ### 🔸 LLM Context
 Jab LLM ko call keya jata hay tw wo srf conversation history ka data dekh sakta hay, Agar ap LLM ko koi naya data dena chahty hain tw ap ko usy aesy provide karna hoga jo usy us history mein available banady is ky kuch tareqy ye hain:
 
-1. **Instructions:** Ap isy Agent instruction mein add kar sakty hain jeesy system promt ya developer message bhi kaha jata hay. system prompt static string bhi ho sakte hay aur dynamic functions jo context receive karky ek string output dety hain. ye usually is leye use keya jata hay jo information hamesha kam ki ho jesy user ka naam ya current date.
+#### 1. **Instructions**
+Ap isy **Agent instruction** mein add kar sakty hain jeesy system promt ya developer message bhi kaha jata hay. 
+- system prompt static string bhi ho sakta hay. 
+- Ya dynamic functions bhi jo context receive karky ek string output dety hain.  
 
-2. **Input:** Isy ap `Runner.run` ky andar ap input mein dy sakty hain. ye instructions tactic ki tarha hota hay lekin is tareeqy sy ap aesy message rakh sakty hain jo command chain mein nechy hota hain. Yani LLM usko dekh sakta hay, lekin priority level instruction sy kum hota hay.
+Usually yeh hamesha useful information ke liye hota hai.
+- User ka naam
+- Current date   
 
-3. **Tools Functions:** Isy ap tool function ky zariye bhi expose kar sakty hain, iska faida ye hota hay keh LLM jab chahy tab wo data ly sakta hay yani on-demand context.
+#### 2. **Input**
+Isy ap `Runner.run` ky andar ap input mein dy sakty hain.  
+Ye **instructions tactic** ki tarha hota hay lekin is tareqy sy ap aesy message rakh sakty hain jo **command chain** mein nechy hota hain.  
+Yani LLM usko dekh sakta hay, lekin priority level instructions sy kum hota hay.
 
-Is case me:
-- Ap ek tool banaty hain jo required data fetch karta hai (jesy database se, API se, ya Local Context se).
+#### 3. **Tools Functions**
+Ap tool function ky zariye bhi expose kar sakty hain.  
+Iska faida ye hota hay keh LLM jab chahy tab wo data ly sakta hay yani **on-demand context**.
+
+Process:
+- Ek tool banaye jo required data fetch kary (jesy database se, API se, ya Local Context se).
 - LLM apni zaroorat ke mutabiq us tool ko call karta hai.
-- Tool ka output conversation history me add ho jata hai, aur LLM usko use karke agla response generate karta hai.
+- Tool ka output **conversation history** me add ho jata hai, aur LLM usko use karke agla response generate karta hai.
 
-4. **Retrieval ya Websearch:** Aap retrieval ya web search tools ka use karke LLM ko relevant data de sakte ho:
+#### 4. **Retrieval ya Web Search**
+Ap **retrieval** ya **web search** tools ka use karky LLM ko relevant data de sakty ho:
 
-- **Retrieval:** File system, database ya knowledge base ya revelant data get karna ho.
+- **Retrieval:** File system, database ya knowledge base sy revelant data get karna ho.
 - **Web Search:** Internet se latest information fetch karna.
 
-is ka faida ye hota hay LLM ka jawab "grounded" hota hay, yani wo apni bat ko revelant aur sahi context ky sath deta hay, guessing kum hoti hay
+Advantage:
+- LLM ka jawab **grounded** hota hai (yani wo apni bat ko revelant aur sahi context ky sath deta hay).
+- Guessing kum hoti hai.
