@@ -94,35 +94,20 @@ if __name__ == "__main__":
 ### 🔸 LLM Context
 Jab LLM ko call keya jata hay tw wo srf conversation history ka data dekh sakta hay, Agar ap LLM ko koi naya data dena chahty hain tw ap ko usy aesy provide karna hoga jo usy us history mein available banady is ky kuch tareqy ye hain:
 
-#### 1. **Instructions**
-Ap isy **Agent instruction** mein add kar sakty hain jeesy system promt ya developer message bhi kaha jata hay. 
-- system prompt static string bhi ho sakta hay. 
-- Ya dynamic functions bhi jo context receive karky ek string output dety hain.  
+1. **Instructions:** Ap isy Agent instruction mein add kar sakty hain jeesy system promt ya developer message bhi kaha jata hay. system prompt static string bhi ho sakte hay aur dynamic functions bhi jo context receive karky ek string output dety hain. ye usually is leye use keya jata hay jo information hamesha kam ki ho jesy user ka naam ya current date.
 
-Usually yeh hamesha useful information ke liye hota hai.
-- User ka naam
-- Current date   
+2. **Input:** Isy ap `Runner.run` ky andar ap input mein dy sakty hain. ye instructions tactic ki tarha hota hay lekin is tareqy sy ap aesy message rakh sakty hain jo command chain mein nechy hota hain. Yani LLM usko dekh sakta hay, lekin priority level instruction sy kum hota hay.
 
-#### 2. **Input**
-Isy ap `Runner.run` ky andar ap input mein dy sakty hain.  
-Ye **instructions tactic** ki tarha hota hay lekin is tareqy sy ap aesy message rakh sakty hain jo **command chain** mein nechy hota hain.  
-Yani LLM usko dekh sakta hay, lekin priority level instructions sy kum hota hay.
+3. **Tools Functions:** Isy ap tool function ky zariye bhi expose kar sakty hain, iska faida ye hota hay keh LLM jab chahy tab wo data ly sakta hay yani on-demand context.
 
-#### 3. **Tools Functions**
-Ap tool function ky zariye bhi expose kar sakty hain.  
-Iska faida ye hota hay keh LLM jab chahy tab wo data ly sakta hay yani **on-demand context**.
-
-Process:
-- Ek tool banaye jo required data fetch kary (jesy database se, API se, ya Local Context se).
+Is case me:
+- Ap ek tool banaty hain jo required data fetch karta hai (jesy database se, API se, ya Local Context se).
 - LLM apni zaroorat ke mutabiq us tool ko call karta hai.
-- Tool ka output **conversation history** me add ho jata hai, aur LLM usko use karke agla response generate karta hai.
+- Tool ka output conversation history me add ho jata hai, aur LLM usko use karke agla response generate karta hai.
 
-#### 4. **Retrieval ya Web Search**
-Ap **retrieval** ya **web search** tools ka use karky LLM ko relevant data de sakty ho:
+4. **Retrieval ya Websearch:** Aap retrieval ya web search tools ka use karke LLM ko relevant data de sakte ho:
 
-- **Retrieval:** File system, database ya knowledge base sy revelant data get karna ho.
+- **Retrieval:** File system, database ya knowledge base ya revelant data get karna ho.
 - **Web Search:** Internet se latest information fetch karna.
 
-Advantage:
-- LLM ka jawab **grounded** hota hai (yani wo apni bat ko revelant aur sahi context ky sath deta hay).
-- Guessing kum hoti hai.
+is ka faida ye hota hay LLM ka jawab "grounded" hota hay, yani wo apni bat ko revelant aur sahi context ky sath deta hay, guessing kum hoti hay
