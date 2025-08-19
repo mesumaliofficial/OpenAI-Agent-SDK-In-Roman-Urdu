@@ -50,31 +50,6 @@ agent = Agent[UserContext](
 )
 ```
 
-### 🔸Output Types
-- By default, agent plain text yani (str) output deta hai.
-- Lekin agar aap chahen ke agent kisi specific type ka output de, to aap `output_type` parameter ka use karke output ki type define kar sakte hain.
-- Ek common choice hoti hai ke `Pydantic object` ka use kiya jaye.
-- Iske ilawa, agent kisi bhi type ka object support karta hai jo Pydantic TypeAdapter mein wrap ho sakta ho. jesy: dataclasses, lists, TypedDict, etc.
-
-```bash 
-from pydantic import BaseModel
-from agents import Agent
-
-
-class CalendarEvent(BaseModel):
-    name: str
-    date: str
-    participants: list[str]
-
-agent = Agent(
-    name="Calendar extractor",
-    instructions="Extract calendar events from text",
-    output_type=CalendarEvent,
-)
-```
-**Note:** Jab output type ka use karty hain, tw yeh model ko batata hay ke wo regular plain text ky bajaye [structured output](https://platform.openai.com/docs/guides/structured-outputs) ka use kare.
-
-
 ### 🔸Handoffs
 - Handoffs aesy sub agents hoty hain jinhy main agent apna kam delegate karta sakta hay.
 - Ap ek agents ki list provide karty ho aur agar agent decide karta hay delagate kary agar revelant ho,
