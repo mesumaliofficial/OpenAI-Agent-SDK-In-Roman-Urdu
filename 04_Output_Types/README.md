@@ -103,3 +103,38 @@ class PersonInfo(BaseModel):
 | **Required Fields**  | Ye fields lazmi hone chahiye        | By default, sab fields required hoti hain |
 | **Optional Fields**  | Ye fields missing bhi ho sakti hain | `rainfall: Optional[float] = None`        |
 
+
+---
+
+
+### 🔸Baby Steps Examples
+1. First Structure Output 
+```python
+from pydantic import BaseModel
+from agents import Agent, Runner
+
+# Apna data structured define karen
+class PersonInfo(BaseModel):
+    name: str
+    age: int
+    occupation: str
+
+# Agent banayen with data structured
+agent = Agent(
+    name="InfoCollector",
+    instructions="Extract person information from the user's message.",
+    output_type=PersonInfo  # This is the magic!
+)
+
+# Test it
+result = Runner.run_sync(
+    agent, 
+    "Hi, I'm Alice, I'm 25 years old and I work as a teacher."
+)
+
+# Now you get perfect structured data!
+print("Type:", type(result.final_output))        # <class 'PersonInfo'>
+print("Name:", result.final_output.name)         # "Alice"
+print("Age:", result.final_output.age)           # 25
+print("Job:", result.final_output.occupation)    # "teacher"
+```
