@@ -105,3 +105,7 @@ class PersonInfo(BaseModel):
 
 
 ---
+
+### Resources & Practical Demos
+
+- [OpenAI Agent Output Type/Structured output Colab Notebook](https://colab.research.google.com/drive/11svP2C0G6--FNdxFzD2QVWtIfg_5ZGmM?usp=sharing) → Interactive example with code and usage.
