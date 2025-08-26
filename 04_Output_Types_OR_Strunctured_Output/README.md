@@ -107,7 +107,7 @@ class PersonInfo(BaseModel):
 ---  
 <br/>
 
-> **Note:** OpenAI mein Structured Outputs srf latest LLMs mein available hain. Jo shuru hoty hain **GPT-4o** sy. jo purany version hain jesy **GPT-4-turbo** un mein structure output direct support nh karta wahan **Json mode** use akrnna parta hay.
+> **Note:** OpenAI mein Structured Outputs srf latest LLMs mein available hain. Jo shuru hoty hain **GPT-4o** sy. jo purany version hain jesy **GPT-4-turbo** un mein structure output direct support nh karta wahan **Json mode** use karnna parta hay.
 
 ### 🔸Resources & Practical Demos
 
