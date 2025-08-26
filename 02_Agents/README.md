@@ -30,22 +30,3 @@ agent = Agent(
 ```
 
 ---
-
-### 🔸Output Types → Api Refrences
-```python
-output_type: type[Any] | AgentOutputSchemaBase | None = None
-```
-Ye option decide karta hay keh agent ka output kis type ka object hoga.
-- Agar aap kuch bhi na do, to **default string (str)** return hoge.
-- Zyada cases mein aapko Python ka koi structured type use karna chahiye (jaise `dataclass`, `Pydantic model`, `TypedDict`, etc.) taa keh output organized aur predictable aaye.
-
-1. **Non-strict Schema**   
-Agar apko thora flexible output chahiye (matlab model chhoti-moti format ki galtiya ignore kar dy aur data accept kar ly), tw `AgentOutputSchema(MyClass, strict_json_schema=False)` use karo.
-
-2. **Custom Schema**
-Agar apko apna khud ka schema banana hai (SDK ka auto-schema use kiye bina), to ek class banao jo AgentOutputSchemaBase se inherit kare aur usko pass kar do.
-
-#### Example:
-Strict => Agar schema mein `title: str, price: float` likha hay, aur agent price string bana de "10" instead of 10.0, to error aayega.
-
-Non-Strcit => Agar agent thora format different bana de (e.g. string instead of float), to SDK usko accept kar lega aur internally try karega correct karny ki. 
