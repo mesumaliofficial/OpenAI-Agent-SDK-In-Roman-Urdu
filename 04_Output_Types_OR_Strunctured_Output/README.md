@@ -104,8 +104,11 @@ class PersonInfo(BaseModel):
 | **Optional Fields**  | Ye fields missing bhi ho sakti hain | `rainfall: Optional[float] = None`        |
 
 
----
+---  
+<br/>
 
-### Resources & Practical Demos
+> **Note:** OpenAI mein Structured Outputs srf latest LLMs mein available hain. Jo shuru hoty hain **GPT-4o** sy. jo purany version hain jesy **GPT-4-turbo** un mein structure output direct support nh karta wahan **Json mode** use akrnna parta hay.
+
+### 🔸Resources & Practical Demos
 
 - [OpenAI Agent Output Type/Structured output Colab Notebook](https://colab.research.google.com/drive/11svP2C0G6--FNdxFzD2QVWtIfg_5ZGmM?usp=sharing) → Interactive example with code and usage.
