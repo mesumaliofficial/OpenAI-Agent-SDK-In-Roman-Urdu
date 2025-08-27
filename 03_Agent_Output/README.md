@@ -4,9 +4,9 @@
 Bases: `ABC`
 Ye base class hay jo Agent ky output ko control karte hay.
 Jab Agent koi Answer deta hay (LLM ka raw text ya json schema) tw ye class ensure karte hay:
-- **Schema Capture:** Konsa format/schema follow karna hay output ka (e.g., dictionary, list, string) bt default string hota h.
+- **Schema Capture:** Konsa format/schema follow karna hay output ka (e.g., dictionary, list, string) by default string hota h.
 - **Validation** Jo LLM ny output deya, wo **valid JSON** aur **sahi format** mein hay ya nh.
-- **Parsing:** output valid hai, tw isy **Python object** (dict/list etc.) mein convert kar deta hai.
+- **Parsing:** Output valid hai, tw isy **Python object** (dict/list etc.) mein convert kar deta hai.
 
 
 ### 🔸Behind the Scenes Flow (Easy Words)
@@ -62,6 +62,8 @@ class AgentOutputSchemaBase(abc.ABC):
 ```
 </details>
 
+---
+
 ### 🔸is_plain_text
 `abstractmethod`  
 Ye ek method hay jo har output schema class ko implement karna parte hay (kyunki abstractmethod hai).  
@@ -76,3 +78,7 @@ Iska kam ye check karna hay keh Agent ka simple **plain text** hay ya ek **struc
 2. **AgentOutputSchemaBase:** ke andar `is_plain_text()` decide karta hai:
     - `True` → iska matlab output sirf string/text hai.
     - `False` → iska matlab output ek JSON schema ke structure mein hoga.
+
+---
+
+### 🔸is_plain_text
