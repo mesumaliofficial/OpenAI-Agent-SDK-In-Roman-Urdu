@@ -158,4 +158,11 @@ Jab model se JSON string ata hay (jesy {"name": "Ali", "age": 22}), tw yeh metho
 Agar sab sahi hota hay tw wo validated object return kardeta hay(jesy ek dict ya parsed data).  
 Agar kuch galat hota hay tw `ModelBehaviorError` raise kar deta hay.
 
+
+> **Note:** Agents library ke andar jo Agent / Runner / RunConfig classes hain, wo internally pydantic v2 ka use karti hain (models ke input/output ko validate karne ke liye). tw apko `AgentOutputSchemaBase` ky sath pydantic `BaseModel` ka use karna paryga.
+ 
 ---
+
+### 🔸Resources & Practical Demos
+
+- [OpenAI Agent Output Type/Structured output Colab Notebook](https://colab.research.google.com/drive/1HEz71EXQri48vW1hD8BHXVxk6iLV8skB?usp=sharing) → Interactive example with code and usage.
