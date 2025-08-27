@@ -2,11 +2,11 @@
 
 ### 🔸AgentOutputSchemaBase
 Bases: `ABC`
-Ye base class hay jo Agent ky output ko control karte hay.
-Jab Agent koi Answer deta hay (LLM ka raw text ya json schema) tw ye class ensure karte hay:
-- **Schema Capture:** Konsa format/schema follow karna hay output ka (e.g., dictionary, list, string) by default string hota h.
-- **Validation** Jo LLM ny output deya, wo **valid JSON** aur **sahi format** mein hay ya nh.
-- **Parsing:** Output valid hai, tw isy **Python object** (dict/list etc.) mein convert kar deta hai.
+- Ye ek base class hai jo agent ke output ko control karta hai.
+- Jab agent koi response generate karta hai (LLM se), to ye class ensure karti hai:
+    - **Schema Capture:** Default format kya hoga (e.g., string, dict, list).
+    - **Validation:** Kya LLM ka response valid JSON hai aur schema ke according hai ya nahi.
+    - **Parsing:** Agar valid hay, tw isy Python object (dict, list, model) mein convert kar deta hai.
 
 
 ### 🔸Behind the Scenes Flow (Easy Words)
@@ -14,10 +14,10 @@ Jab Agent koi Answer deta hay (LLM ka raw text ya json schema) tw ye class ensur
 2. **Agent Thinking:** LLM answer generate karta hai → {"usd": 100, "pkr": 28000}
 
 3. *AgentOutputSchemaBase ka Kaam:*
-    - Check karega keh output JSON hai ya nahi.
-    - Again Check karyga kya output schema (keys/values) sahi format follow karta hai.
-    - Agar sab sahi ho to isy Python object bana ke return karega.
-4. **Final Result:** Agent confidently user ko valid structured result deta hai.
+    - `is_plain_text()` → ye determine karta hay kya ye output text hai ya JSON object.
+    - Agar `False` hay tw `json_schema()` sy schema retrive karo aur validate json sy validate karo keh keys/ values format sahi hay ya nh.
+    - Agar sahi hai, convert karky Python object return karo.
+4. **Final Result:** Agent user ko safe, structured output deta hai.
 
 <details>
 <summary><b>Source code in </b>src/agents/agent_output.py</summary>
@@ -81,4 +81,46 @@ Iska kam ye check karna hay keh Agent ka simple **plain text** hay ya ek **struc
 
 ---
 
-### 🔸is_plain_text
+### 🔸name
+`abstractmethod`
+- Ye method agent output schema ko ek unique naam deta hai.
+- Use Case Example:
+    - Apne ek agent banaya jo kabhi text output dega ya kabhi structured JSON.
+    - Debugging ke time pe agar agent kis schema se output le raha tha, ye naam usko clearly identify karta hay.
+    - Yani logs mein ya multi-schema setups mein kaam aata hai.
+
+**Code Example:**  
+```python
+from openai
+ import AgentOutputSchemaBase
+
+class MyTextOutput(AgentOutputSchemaBase):
+    def name(self) -> str:
+        return "plain_text"
+
+    def is_plain_text(self) -> bool:
+        return True
+
+```
+Yahan:  
+`name()` → `"plain_text"` return kar raha hai (iska matlab ye output schema **plain text** handle karta hai).
+
+Agar Json output banaty hain tw:
+```python
+class MyJSONOutput(AgentOutputSchemaBase):
+    def name(self) -> str:
+        return "json_output"
+
+    def is_plain_text(self) -> bool:
+        return False
+
+```
+#### Use case of name():
+Jab ap **multiple output schemas** registar karty hain ek agent ky sath tw har ek ko pechan ky leye name ki zaroorat hoti hay.
+
+
+### 🔸Quick Summary
+- AgentOutputSchemaBase → Base class jo output ko control, validate aur parse karti hai.
+- is_plain_text() → Decide karta hai plain text ya JSON schema.
+- name() → Schema ka unique naam (debugging / multi-schema mein helpful).
+- Default → Agar output_type na do to plain text use hota hai.
