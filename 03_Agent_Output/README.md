@@ -13,9 +13,9 @@ Bases: `ABC`
 1. **User Input:** "100 USD ko PKR mein convert karo"
 2. **Agent Thinking:** LLM answer generate karta hai → {"usd": 100, "pkr": 28000}
 
-3. *AgentOutputSchemaBase ka Kaam:*
+3. **AgentOutputSchemaBase ka Kaam:**
     - `is_plain_text()` → ye determine karta hay kya ye output text hai ya JSON object.
-    - Agar `False` hay tw `json_schema()` sy schema retrive karo aur validate json sy validate karo keh keys/ values format sahi hay ya nh.
+    - Agar `False` hay tw `json_schema()` sy schema retrive karo aur `validate_json()` sy validate karo keh keys/ values format sahi hay ya nh.
     - Agar sahi hai, convert karky Python object return karo.
 4. **Final Result:** Agent user ko safe, structured output deta hai.
 
@@ -64,7 +64,7 @@ class AgentOutputSchemaBase(abc.ABC):
 
 ---
 
-### 🔸is_plain_text
+### 🔸is_plain_text() -> bool
 `abstractmethod`  
 Ye ek method hay jo har output schema class ko implement karna parte hay (kyunki abstractmethod hai).  
 Iska kam ye check karna hay keh Agent ka simple **plain text** hay ya ek **structured json object** hay
@@ -81,7 +81,7 @@ Iska kam ye check karna hay keh Agent ka simple **plain text** hay ya ek **struc
 
 ---
 
-### 🔸name
+### 🔸name () -> bool
 `abstractmethod`
 - Ye method agent output schema ko ek unique naam deta hai.
 - Use Case Example:
@@ -118,9 +118,44 @@ class MyJSONOutput(AgentOutputSchemaBase):
 #### Use case of name():
 Jab ap **multiple output schemas** registar karty hain ek agent ky sath tw har ek ko pechan ky leye name ki zaroorat hoti hay.
 
+---
 
-### 🔸Quick Summary
-- AgentOutputSchemaBase → Base class jo output ko control, validate aur parse karti hai.
-- is_plain_text() → Decide karta hai plain text ya JSON schema.
-- name() → Schema ka unique naam (debugging / multi-schema mein helpful).
-- Default → Agar output_type na do to plain text use hota hai.
+### 🔸json_schema() -> dict[str, Any]
+`abstractmethod`  
+json_schema() Ek abstract method hai jo tabhi call hota hai jab apka output plain text nahin hai (i.e., `is_plain_text() == False`).
+
+#### In Simple words:
+- Agar ap ka AgentOutput sirf text return kar raha hay tw → schema ki zaroorat nahi → json_schema() call nhin hoga.
+- Agar ap ka AgentOutput ek structured JSON return kar raha hai tw → system ko pehly pata hona chahiye ki JSON ka structure kaisa hoga. Ye structure json_schema() method define karta hai.
+
+---
+
+### 🔸is_strict_json_schema() -> bool
+`abstractmethod`
+Ye batata hai keh JSON schema kis mode mein chalyga:
+
+#### Strict Mode (True): 
+- Guarantee deta hai ke output hamesha valid JSON hoga.
+- Use case: jab tumhe 100% valid aur predictable JSON chahiye (jaise API integration, database entry).
+
+#### Non-Strict Mode (False):
+- Zyada flexible schema hota hai.
+- Lekin kabhi kabhi LLM thoda free-style JSON generate kar sakta hai (invalid ya loose structure).
+- Use case: jab tumhe thoda flexibility chahiye aur exact strictness zaroori nahi.
+
+#### Default Behavior
+By default ye apko hi implement karna hota hai (abstract method hai). Ap decide karty ho True ya False.
+
+---
+
+### 🔸validate_json(json_str: str) -> Any
+`abstractmethod`  
+Yeh ek abstract method hai jo tum custom output schema banate waqt implement karna parta hay.
+
+Jab model se JSON string ata hay (jesy {"name": "Ali", "age": 22}), tw yeh method check karta hay keh:  
+1. Kya JSON sahi format mein hay ?
+2. Kya wo apky schema ke rules follow karta hai ?  
+Agar sab sahi hota hay tw wo validated object return kardeta hay(jesy ek dict ya parsed data).  
+Agar kuch galat hota hay tw `ModelBehaviorError` raise kar deta hay.
+
+---
