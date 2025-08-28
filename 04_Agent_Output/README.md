@@ -9,11 +9,24 @@ Bases: `ABC`
     - **Parsing:** Agar valid hay, tw isy Python object (dict, list, model) mein convert kar deta hai.
 
 
+### 🔸AgentOutputSchemaBase ka kam kya hay ?  
+Suppose karo tumhary paas **robots (agents)** hay jo har sawaal ka jawab deta hay.
+
+Lekin har robot apna jawab **alag tareeqy sy deta** hay:  
+- Koi robot sirf text likhta hai → `"Hello!"`  
+- Koi robot list deta hai → `[1,2,3]`  
+- Koi robot JSON deta hai → `{ "text": "hello", "hobbies": [1,2,3] }`
+
+Ab humein robots ko rule dena hai:
+- Tum sary ek jesa jawab do dogy ya tum tum plain mein dogy aur tum json mein.
+- Issy use karna easy hota hay predictable output ata hay.  
+
+
 ### 🔸Behind the Scenes Flow (Easy Words)
 1. **User Input:** "100 USD ko PKR mein convert karo"
 2. **Agent Thinking:** LLM answer generate karta hai → {"usd": 100, "pkr": 28000}
 
-3. **AgentOutputSchemaBase ka Kaam:**
+3. **AgentOutputSchemaBase:**
     - `is_plain_text()` → ye determine karta hay kya ye output text hai ya JSON object.
     - Agar `False` hay tw `json_schema()` sy schema retrive karo aur `validate_json()` sy validate karo keh keys/ values format sahi hay ya nh.
     - Agar sahi hai, convert karky Python object return karo.
@@ -162,6 +175,7 @@ Agar kuch galat hota hay tw `ModelBehaviorError` raise kar deta hay.
 > **Note:** Agents library ke andar jo Agent / Runner / RunConfig classes hain, wo internally pydantic v2 ka use karti hain (models ke input/output ko validate karne ke liye). tw apko `AgentOutputSchemaBase` ky sath pydantic `BaseModel` ka use karna paryga.
  
 ---
+
 
 ### 🔸Resources & Practical Demos
 
