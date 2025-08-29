@@ -34,19 +34,19 @@ agent = Agent(
 ### 🔸Agents Arguments
 
 
-| **Argument**          | **Required / Optional** | **Type**                           | **Short Description**                                 |
-| --------------------- | ----------------------- | ---------------------------------- | ----------------------------------------------------- |
-| `name`                | Required                | `str`                              | Agent ka unique identifier                            |
-| `instructions`        | Optional                | `str` / `callable`                 | System prompt ya logic (static ya dynamic)            |
-| `prompt`              | Optional                | `Prompt` / `callable`              | Advanced/dynamic prompt configuration                 |
-| `handoff_description` | Optional                | `str`                              | Description for handoffs (explain role in delegation) |
-| `handoffs`            | Optional                | `list[Agent]`                      | Sub-agents jinko tasks delegate ho sakte hain         |
-| `model`               | Optional                | `str` / `Model`                    | Specify LLM (default: GPT-4.1)                        |
-| `model_settings`      | Optional                | `ModelSettings`                    | Model tuning (temperature, top\_p, tool choices)      |
-| `tools`               | Optional                | `list[Tool]`                       | External APIs/functions agent use kar sakta hai       |
-| `input_guardrails`    | Optional                | `list[InputGuardrail]`             | Validation checks before agent runs                   |
-| `output_guardrails`   | Optional                | `list[OutputGuardrail]`            | Checks after response generated                       |
-| `output_type`         | Optional                | `type` / `AgentOutputSchemaBase`   | Expected format of final output (default: `str`)      |
-| `hooks`               | Optional                | `AgentHooks`                       | Lifecycle event callbacks (logging/debugging)         |
-| `tool_use_behavior`   | Optional                | `str` / `StopAtTools` / `callable` | Defines how tool outputs are handled                  |
-| `reset_tool_choice`   | Optional                | `bool`                             | Reset tool selection after use to avoid loops         |
+| **Argument**          | **Required / Optional** | **Type**                                                    | **Short Description**                                 |
+| --------------------- | ----------------------- | ------------------------------------------------------------| ----------------------------------------------------- |
+| `name`                | Required                | `str`                                                       | Agent ka unique identifier                            |
+| `instructions`        | Optional                | `str` / `callable`                                          | System prompt ya logic (static ya dynamic)            |
+| `prompt`              | Optional                | `Prompt` / `callable`                                       | Advanced/dynamic prompt configuration                 |
+| `handoff_description` | Optional                | `str`                                                       | Description for handoffs (explain role in delegation) |
+| `handoffs`            | Optional                | `list[Agent]`                                               | Sub-agents jinko tasks delegate ho sakte hain         |
+| `model`               | Optional                | `str` / `Model`                                             | Specify LLM (default: GPT-4.1)                        |
+| `model_settings`      | Optional                | `ModelSettings`                                             | Model tuning (temperature, top\_p, tool choices)      |
+| `tools`               | Optional                | `list[Tool]`                                                | External APIs/functions agent use kar sakta hai       |
+| `input_guardrails`    | Optional                | `list[InputGuardrail]`                                      | Validation checks before agent runs                   |
+| `output_guardrails`   | Optional                | `list[OutputGuardrail]`                                     | Checks after response generated                       |
+| `output_type`         | Optional                | `type` / `AgentOutputSchemaBase`/ `AgentOutputSchema`       | Expected format of final output (default: `str`)      |
+| `hooks`               | Optional                | `AgentHooks`                                                | Lifecycle event callbacks (logging/debugging)         |
+| `tool_use_behavior`   | Optional                | `str` / `StopAtTools` / `callable`                          | Defines how tool outputs are handled                  |
+| `reset_tool_choice`   | Optional                | `bool`                                                      | Reset tool selection after use to avoid loops         |
