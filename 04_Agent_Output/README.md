@@ -4,7 +4,7 @@
 Bases: `ABC`
 Ye ek **base class** hai jo agent ke output ko control karta hai.
 
-Jab agent koi response generate karta hai (LLM se), tw ye class ensure karti hay keh:
+Jab agent koi response generate karta hai (LLM sy), tw ye class ensure karti hay keh:
 
 - **Schema Capture:** Output ka default format kya hoga (e.g., string, dict, list)..
 - **Validation:** Kya LLM ka response valid JSON hai aur schema ke according hay ya nahi.
@@ -89,8 +89,7 @@ Ye check karta hai ke agent ka output plain text (str) hai ya structured JSON.
 2. `name () -> str`  
 `abstractmethod`
 Ye method agent output schema ko ek unique naam deta hay.  
-**Use case:**
-- Jab ap **multiple output schemas** registar karty hain ek agent ky sath tw har ek ko pechan ky leye naam ki zaroorat hoti hay.
+**Use case:** Jab ap **multiple output schemas** registar karty hain ek agent ky sath tw har ek ko pechan ky leye naam ki zaroorat hoti hay.
 
 
 3. `json_schema() -> dict[str, Any]`  
@@ -115,16 +114,28 @@ Ye method agent output schema ko ek unique naam deta hay.
 
 ### 🔸AgentOutputSchema
 Bases `AgentOutputSchemaBase`  
-Ye class AgentOutputSchemaBase ko inherit karky banayi gayi hay, yani same methods is per bhi apply hoty hain jo AgentOutputSchemaBase mein hain.
+AgentOutputSchema ek dataclass wrapper hay jo AgentOutputSchemaBase ko inherit karky banaye gaye hay.
 
-- **Purpose:** LLM se aany waly output ko capture, parse aur validate karna.
-- **Attribute:** `output_type` → Batata hay keh agent ka output kesa hoga jesy: (e.g., JSON schema, str).
+**Purpose:**
+- Ye class LLM ke structured output ko handle karny ke liye use hoti hay.
+- Apko manually parsing aur validation ke liye methods likhne ki zarurat nahi hoti hay.
+- Ye automatically apky deye gaye model (Pydantic, dataclass ya TypedDict) sy JSON schema generate kar deti hay.
 
+### 🔸How it works
+1. Ap ek schema model define karty ho (Pydantic model ya dataclass).
+2. Us model ko simply AgentOutputSchema(MyModel) mein wrap kar do.
+3. Ye class automatically:
+    - JSON schema generate karyge.
+    - Output ko validate karyge.
+    - Parsing handle karyge.
 
-> **Note:** AgentOutputSchemaBase class pydantic ka use karty hay tw hame iska use karty waqt Pydantic BaseModel ko bhi sath inherit karna hoga
-
+### 🔸Why use it
+- Jab apko structured outputs chahiye (like JSON response, specific fields), bina boilerplate likhe.
+- Ye recommended option hay kyunki simple aur direct usage deta hay.
 
 ---
+
+**Note:** AgentOutputSchemaBase class pydantic ka use karty hay tw hame iska use karty waqt Pydantic BaseModel ko bhi sath inherit karna hoga
 
 
 ### 🔸Resources & Practical Demos
