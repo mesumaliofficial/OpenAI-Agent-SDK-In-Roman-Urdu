@@ -2,35 +2,35 @@
 
 ### 🔸AgentOutputSchemaBase
 Bases: `ABC`
-- Ye ek base class hai jo agent ke output ko control karta hai.
-- Jab agent koi response generate karta hai (LLM se), to ye class ensure karti hai:
-    - **Schema Capture:** Default format kya hoga (e.g., string, dict, list).
-    - **Validation:** Kya LLM ka response valid JSON hai aur schema ke according hai ya nahi.
-    - **Parsing:** Agar valid hay, tw isy Python object (dict, list, model) mein convert kar deta hai.
+Ye ek **base class** hai jo agent ke output ko control karta hai.
+
+Jab agent koi response generate karta hai (LLM se), tw ye class ensure karti hay keh:
+
+- **Schema Capture:** Output ka default format kya hoga (e.g., string, dict, list)..
+- **Validation:** Kya LLM ka response valid JSON hai aur schema ke according hay ya nahi.
+- **Parsing:** Agar valid ho tw, isy Python object (dict, list, model) mein convert kar deta hai.
 
 
 ### 🔸AgentOutputSchemaBase ka kam kya hay ?  
-Suppose karo tumhary paas **robots (agents)** hay jo har sawaal ka jawab deta hay.
+Socho apky pass robots (agents) hain jo har sawaal ka jawab dety Lekin har robot apna jawab alag tareqy sy deta hay:
 
-Lekin har robot apna jawab **alag tareeqy sy deta** hay:  
-- Koi robot sirf text likhta hai → `"Hello!"`  
-- Koi robot list deta hai → `[1,2,3]`  
-- Koi robot JSON deta hai → `{ "text": "hello", "hobbies": [1,2,3] }`
+- Koi robot sirf text likhta hay → `"Hello!"`  
+- Koi robot list deta hay → `[1, 2, 3]`  
+- Koi robot JSON deta hay → `{ "text": "hello", "hobbies": [1,2,3] }`
 
 Ab humein robots ko rule dena hai:
-- Tum sary ek jesa jawab do dogy ya tum tum plain mein dogy aur tum json mein.
-- Issy use karna easy hota hay predictable output ata hay.  
+- Tum sab ek jesa jawab do, ya plain text doge ya structured JSON.
+- Is tarha sy output predictable aur easy to use ho jata hai. 
 
 
 ### 🔸Behind the Scenes Flow (Easy Words)
-1. **User Input:** "100 USD ko PKR mein convert karo"
-2. **Agent Thinking:** LLM answer generate karta hai → {"usd": 100, "pkr": 28000}
-
+1. **User Input:** `"100 USD ko PKR mein convert karo"`
+2. **Agent Thinking:** LLM answer generate karta hay → `{"usd": 100, "pkr": 28000}`
 3. **AgentOutputSchemaBase:**
-    - `is_plain_text()` → ye determine karta hay kya ye output text hai ya JSON object.
-    - Agar `False` hay tw `json_schema()` sy schema retrive karo aur `validate_json()` sy validate karo keh keys/ values format sahi hay ya nh.
-    - Agar sahi hai, convert karky Python object return karo.
-4. **Final Result:** Agent user ko safe, structured output deta hai.
+    - `is_plain_text()` → decide karta hay keh output text hay ya JSON object.
+    - Agar `False` ho tw → `json_schema()` se schema retrieve karo aur `validate_json()` se validate karo.
+    - Agar sahi ho → Python object return karo.
+4. **Final Result:** Agent user ko safe aur structured output deta hay.
 
 <details>
 <summary><b>Source code in </b>src/agents/agent_output.py</summary>
@@ -77,26 +77,24 @@ class AgentOutputSchemaBase(abc.ABC):
 
 ---
 
-### 🔸is_plain_text() -> bool
+### 🔸Method Explanations
+
+#### `is_plain_text() -> bool`  
+`abstractmethod`
+Ye check karta hai ke agent ka output plain text (str) hai ya structured JSON.
+- **True:** Agar output True hay tw plain text hay.
+- **False:** Agar output False hay tw JSON object hai (dict, list, Pydantic model).
+
+
+2. `name () -> str`  
 `abstractmethod`  
-Ye ek method hay jo har output schema class ko implement karna parte hay (kyunki abstractmethod hai).  
-Iska kam ye check karna hay keh Agent ka simple **plain text** hay ya ek **structured json object** hay
-
-
-### 🔸Behind the Scenes Flow
-1. Jab koi Agent output generate karta hay tw wo ya tw:
-    - **Plain Text:** Sirf ek string (jesy "Exchange rate is 280 PKR").
-    - **JSON Object:** structured data (jesy { "currency": "PKR", "amount": 280 }).
-
-2. **AgentOutputSchemaBase:** ke andar `is_plain_text()` decide karta hai:
-    - `True` → iska matlab output sirf string/text hai.
-    - `False` → iska matlab output ek JSON schema ke structure mein hoga.
+Ye method agent output schema ko ek unique naam deta hay.
 
 ---
 
 ### 🔸name () -> bool
 `abstractmethod`
-- Ye method agent output schema ko ek unique naam deta hai.
+ Ye method agent output schema ko ek unique naam deta hai.
 - Use Case Example:
     - Apne ek agent banaya jo kabhi text output dega ya kabhi structured JSON.
     - Debugging ke time pe agar agent kis schema se output le raha tha, ye naam usko clearly identify karta hay.
@@ -176,6 +174,61 @@ Agar kuch galat hota hay tw `ModelBehaviorError` raise kar deta hay.
  
 ---
 
+### 🔸AgentOutputSchema
+Bases `AgentOutputSchemaBase`  
+Ye ek class hay jo AgentOutputSchemaBase inherit karky banaye gaye hay iska purpose LLM sy any waly output ko capture karna aur Parse/Validate karna hay taaky output type correct ho.
+
+### 🔸output_type
+`instance-attribute`
+Har Agent ko apna output hota hay aur ye attribute wohi batata hay keh us agent ko kis type ka output generate karna hay (e.g json_schema, str)
+
+---
+
+### 🔸is_plain_text -> bool
+Ye method check karta hai ki agent ka output plain text hai ya structured JSON object.
+
+- True → output plain text hay.
+- False → output JSON / structured object hai (jesy dict ya Pydantic model)  
+
+---
+
+### 🔸is_strict_json_schema() -> bool
+Ye method check karta hai ki agent ka JSON schema strict mode mein hai ya nahi.
+
+- True → strict mode enabled hai
+- False → strict mode disabled hai
+
+#### Strict JSON Schema ka Matlab
+
+**Strict mode = True**
+- LLM output ko exactly schema ke mutabiq validate karta hay.
+- Agar koi extra field ya wrong type hai → validation fail ho jayegi aur ModelBehavorError raise hoga.
+- Recommended for accuracy & safety.
+
+**Strict mode = False**
+- Validation lose hoti hai.
+- Agar kuch extra fields ya mismatch ho tw → wo ignore ho jati hay.
+
+---
+
+### 🔸json_schema() -> dict[str, Any]
+- Ye method output type ka JSON schema return karta hai.
+- Return type: dictionary (Python dict) jisme keys aur values se schema define hota hay.
+- Ye batata hai LLM ko konsa structured format follow karna hai.
+
+
+--- 
+
+### 🔸validate_json(json_str: str) -> Any
+- Ye method json string validate karta hay.
+- Agar JSON valid hai → validated object return hota hai.
+- gar JSON invalid hai → ModelBehaviorError raise hota hai.
+
+
+### 🔸name() -> str
+Ye output typa ka naam hay ye output typa ko 1 unique name provide karta hay 
+
+---
 
 ### 🔸Resources & Practical Demos
 
