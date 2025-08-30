@@ -1,12 +1,12 @@
 ## 🔹 Running Agents
 
-Ap agent ko Runner class ki madad se chalate hain. Apke pas 3 options hoty hain Agent run karwany ky leye:
-- `Runner.run()` → Ye asynchronous method hai jo agent ko run karta hai aur RunResult return karta hai. 
+Ap agent ko Runner class ki madad se chalate hain. Apke pass 3 options hoty hain Agent run karwany ky leye:
+- `Runner.run()` → Ye asynchronous method hay jo agent ko run karta hai aur `RunResult` return karta hay. 
 - `Runner.run_sync()` → Ye synchronous method hai jo internally `.run()` ko call karta hai, matlab jab tak process complete na ho, control wapas nahi aata.
-- `Runner.run_streamed()` → Ye asynchronous method hai jo streaming mode mein run karta hai. `RunResultStreaming` return karta hai. ye LLM ko streaming mode mein call karta hay jesy hi events receive hota hay user ko foran bhj deta hay. (jaise ChatGPT mein hota hai).
+- `Runner.run_streamed()` → Ye asynchronous method hai jo streaming mode mein run karta hai. `RunResultStreaming` return karta hai. ye LLM ko streaming mode mein call karta hay. jesy hi events receive hota hay user ko foran bhj deta hay. (jaise ChatGPT mein hota hai).
 
 **Notes:**
-- **Asynchronous** (async) methods mein await lagate hain, jisse ap dusra kam bhi kar sakta hai jab tak agent ka response aa raha ho.
+- **Asynchronous** (async) methods mein await use karty hain, jissy ap dusry kam bhi sath sath kar sakty hain.
 - **Synchronous** Synchronous methods mein ap ko wait karna parta hai jab tak kam complete na ho jaye, tab tak koi aur kam nahi kar sakty.
 
 ```python
@@ -30,9 +30,9 @@ Phir Runner ek loop chalata hay:
 
 1. Hum current agent ky leye LLM ko call karty hain current input ky sath.
 2. LLM apna output generate karta hay.
-- a. Agar LLM `final_output` return karta hay. tw loop stop hojata hay aur result return hojata hay.
-- b. Agar LLM Handoff karta hay, tw current agent aur input update hoty hain, aur loop again run hota hay.
-- c. Agar LLM tool calls karta hay, tw wo tool calls run hoty hain result input mein append hota hay aur phr dubara sy loop chalta hay.
+    - Agar LLM `final_output` return karta hay. tw loop stop hojata hay aur result return hojata hay.  
+    - Agar LLM Handoff karta hay, tw current agent aur input update hoty hain, aur loop again run hota hay.
+    - Agar LLM tool calls karta hay, tw wo tool calls run hoty hain result input mein append hota hay aur phr dubara sy loop chalta hay.
 3. Agar hum `max_turns` set karty hain aur wo exceed ho jata hai, to `MaxTurnsExceeded` exception milti hai.
 
 **Notes:** LLM ka output tab "final_output" mana jata hay jab wo desire type ka text output produce karta hay, aur koi tool call nh hota.
