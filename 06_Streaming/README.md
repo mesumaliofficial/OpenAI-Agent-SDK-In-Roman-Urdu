@@ -1,13 +1,9 @@
 ## 🔹 Running Agents
 
-Ap agent ko Runner class ki madad se chalate hain. Apke pass 3 options hoty hain Agent run karwany ky leye:
+Ap agent ko `Runner` class ki madad se chalaty hain. Apky pass 3 options hoty hain Agent run karwany ky leye:
 - `Runner.run()` → Ye asynchronous method hay jo agent ko run karta hai aur `RunResult` return karta hay. 
 - `Runner.run_sync()` → Ye synchronous method hai jo internally `.run()` ko call karta hai, matlab jab tak process complete na ho, control wapas nahi aata.
 - `Runner.run_streamed()` → Ye asynchronous method hai jo streaming mode mein run karta hai. `RunResultStreaming` return karta hai. ye LLM ko streaming mode mein call karta hay. jesy hi events receive hota hay user ko foran bhj deta hay. (jaise ChatGPT mein hota hai).
-
-**Notes:**
-- **Asynchronous** (async) methods mein await use karty hain, jissy ap dusry kam bhi sath sath kar sakty hain.
-- **Synchronous** Synchronous methods mein ap ko wait karna parta hai jab tak kam complete na ho jaye, tab tak koi aur kam nahi kar sakty.
 
 ```python
 from agents import Agent, Runner
@@ -21,6 +17,35 @@ async def main():
     # Functions calling themselves,
     # Infinite loop's dance
 ```
+
+---
+
+### 🔸 Runner
+Runner ek class hay jismy 3 methods hoty hain jo agent ko alag–alag tarha se run karwaty hain.
+
+- Ap jo bhi define karty ho (uska behavior, tools, output schema) wo sab `Runner` ke through execute hota hay.
+
+**Role:**
+- Agent ke liye **event loop** manage karta hay.
+- Input → Agent → LLM + Tools → Output ka pura flow handle karta hay.
+- Agent ko ek tarah sy “driver” provide karta hay.
+
+---
+
+### 🔸 .run()
+Workflow start hota hay ek Agent sy jo Ap `Runner.run()` mein dety hain wo Agent loop mein chalyga jab tak final output generate nh hota.
+
+#### Loop ka Flow
+1. **Agent Invocation:** Ap agent ko input ky sath call karty hain.
+2. **Final Output Check:** Agar agent ny ek final output produce keya (yani agent kuch aesa produce kary jo agent.output_type ho) tw loop terminate ho jata hay.
+3. **Handoff Case:** Agar agent ne handoff kiya (yani bola keh ab dusra agent handle kary) → loop new agent ke sath restart hota hai.
+4. **Tool Calls Case:** Agar Agent ny tool calls keye un tools ko run karky phir loop continue hota hay.
+
+#### Exception
+Do cases mein agent exception raise kar sakta hay:
+1. **MaxTurnsExceeded:** Agar `max_turns` exceed ho jaye tw `MaxTurnsExceeded` exception raise hoti hay.
+2. **GuardrailTripwireTriggered:** Agar koi guadrials tripwire triger ho, tw `GuardrailTripwireTriggered` exception raise hoti hay.
+
 
 ---
 
@@ -85,3 +110,9 @@ Agar ye setting **False** hogi, tw sensitive data trace sy exclude kardeya jayeg
 **`trace_metadata`:** Sary traces mein shamil karne ke liye metadata.  
 - wo extra information hoti hay jo ap har tracing record ky sath add karty hain.
 - Iska matlab: Jab bhi tracing data save hota hai (jaise run ke details), aap kuch additional details (metadata) bhej sakte hain jo har trace mein shamil ho.
+
+---
+
+### Resources & Practical Demos
+
+- [OpenAI Agent Running Method Colab Notebook](https://colab.research.google.com/drive/1vMRWG0cT0X0q5o6roez40Gr2UbeAFXEb?usp=sharing) → Interactive example with code and usage.
