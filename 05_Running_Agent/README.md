@@ -176,3 +176,9 @@ Agar ye setting **False** hogi, tw sensitive data trace sy exclude kardeya jayeg
 **`trace_metadata`:** Sary traces mein shamil karne ke liye metadata.  
 - wo extra information hoti hay jo ap har tracing record ky sath add karty hain.
 - Iska matlab: Jab bhi tracing data save hota hai (jaise run ke details), aap kuch additional details (metadata) bhej sakte hain jo har trace mein shamil ho.
+
+---
+
+### Resources & Practical Demos
+
+- [OpenAI Agent Running Method Colab Notebook](https://colab.research.google.com/drive/1vMRWG0cT0X0q5o6roez40Gr2UbeAFXEb?usp=sharing) → Interactive example with code and usage.
