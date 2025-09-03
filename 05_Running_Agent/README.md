@@ -239,6 +239,49 @@ RunResultBase ek **blue print/skeleton** hay jisko RunResult inherit karky outpu
 
 ---
 
+---
+### 🔸 Workflow by Daigram
+
+[User Input / Initial Query]
+           │
+           ▼
+      [Runner.run() / run_sync / run_streamed]
+           │
+           ▼
+     ┌───────────────┐
+     │ Agent Process │
+     │---------------│
+     │ LLM / Tools   │
+     │ - Input process hota hai
+     │ - Tool calls run hote hain
+     │ - Handoff check hota hai
+     │ - Output generate hota hai
+     └───────────────┘
+           │
+           ▼
+ ┌────────────────────────────┐
+ │ RunResultBase Store         │
+ │----------------------------│
+ │ input                      │ ← Original ya mutated input
+ │ new_items                  │ ← Intermediate events (messages, tool outputs, etc)
+ │ raw_responses              │ ← Raw LLM outputs (unparsed)
+ │ final_output               │ ← Validated final output
+ │ input_guardrail_results    │ ← Input checks (pass/fail/triggers)
+ │ output_guardrail_results   │ ← Output checks (pass/fail/triggers)
+ │ context_wrapper            │ ← Execution context / state
+ │ last_agent                 │ ← Last agent that ran
+ │ last_response_id           │ ← Last model response ID
+ └────────────────────────────┘
+           │
+           ▼
+      [Next Steps / Actions]
+      - Result return hota hai caller ko
+      - Handoff hua tw next agent ko feed kiya jata hai
+      - Agar .run_streamed() use hua, tw semantic events stream hote hain
+
+
+---
+
 ### 🔸 The agent Loop
 jab ap `Runner` mein `run` method use karty ho, tw ap 2 arugument pass karty hain, **starting agent** aur **input**, input ya tw ek string hoga (jesy user message) ya phr item ki list jo OpenAI Responses API ke items hoty hain,
 
