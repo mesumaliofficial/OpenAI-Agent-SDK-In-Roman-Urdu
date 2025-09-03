@@ -39,7 +39,7 @@ Workflow start hota hay ek Agent sy jo Ap `Runner.run()` mein dety hain wo Agent
 #### Loop ka Flow
 1. **Agent Invocation:** Ap agent ko input ky sath call karty hain.
 2. **Final Output Check:** Agar agent ny ek final output produce keya (yani agent kuch aesa produce kary jo agent.output_type ho) tw loop terminate ho jata hay.
-3. **Handoff Case:** Agar agent ne handoff kiya (yani bola keh ab dusra agent handle kary) → loop new agent ke sath restart hota hai.
+3. **Handoff Case:** Agar agent ne handoff kiya (yani bola keh ab dusra agent handle kary) → loop new agent ke sath restart hota hay.
 4. **Tool Calls Case:** Agar Agent ny tool calls keye un tools ko run karky phir loop continue hota hay.
 
 #### Exception
@@ -51,7 +51,7 @@ Do cases mein agent exception raise kar sakta hay:
 
 #### Arguments
 - `starting_agent`: Jis agent se run start karna hay.
-- `input`: Agent ko diya gaya initial input (string ya list)
+- `input`: Agent ko deya gaya initial input (string ya list)
 - `context`: Wo context jisme agent run hota hai.
 - `max_turns`: Kitne dafa run karna hay ek turn ka matlab hay ek AI invocation (chahe usmein tool calls ho ya na ho).
 - `hooks`: Ek object jo alag alag lifecycle events par callbacks receive karta hay.
@@ -69,7 +69,7 @@ Ek run result object jisme:
 ---
 
 ### 🔸 .run_sync()
-Ye ek synchronous wrapper hay jo Runner.run() ko call karta hay. Matlab ap agent ko blocking mode me run kara sakty ho.
+Ye ek synchronous wrapper hay jo `Runner.run()` ko call karta hay. Matlab ap agent ko blocking mode me run kara sakty ho.
 - Ye async environments (e.g. Jupyter Notebook, FastAPI, asyncio loop) me work nahi karega.
 
 #### Loop ka Flow
@@ -90,14 +90,15 @@ Ye ek synchronous wrapper hay jo Runner.run() ko call karta hay. Matlab ap agent
 
 ### 🔸When NOT to Use
 - Jupyter Notebook, FastAPI, ya kisi bhi asyncio-based environment me nahi use karna chahiye.
-- Wahan pe aapko Runner.run() hi use karna padega.
+- Wahan pe aapko `Runner.run()` hi use karna padega.
 
 ---
 
 ### 🔸 .run_streamed()
-Ye method workdlow ko streaming mode mein chalata hay.  
+Ye method workflow ko streaming mode mein chalata hay.  
 Matlab Agent ka pura process ek hi bar result return karny ky bajaye, step-by-step **events** ko stream karta hay.  
-jo result object return hota hay usky andar ek method hota hay jis ka use karky ap sementic events ko ly sakty hain
+jo result object return hota hay usme `stream()` method hota hay jiska use karky ap sementic events ya partial output ko realtime mein receive kar sakty hain.
+- stream() ek async iterator return karta hay, isleye isko **async for loop** ke sath use karna hota hay.
 
 #### Loop ka Flow
 - Same as `run` method loop flow.
@@ -112,6 +113,129 @@ jo result object return hota hay usky andar ek method hota hay jis ka use karky 
 Ek run result object jisme:
 - Jisme run ka metadata hota hay.
 - Aur ek streaming method hota hay jiska use karky ap realtime mein semantic events consume kar sakty hain (jesy model ka partial output, tool call/end events, etc).
+
+---
+
+### 🔸 RunResultBase
+`dataclass`  
+Ye ek abstract base class hay (ABC) jo sabhi `RunResult` ky leye common structure banati hay. Matlab isky andar wo **fields** hain aur **methods** hain jo har result mein zaroor hona chahiye.
+
+### 🔸 Instance Attributes
+
+#### input 
+- Jo apny Agent ko deya koi sawal ya query.
+- String ho sakta hay ya list of `TResponseInputItem`.
+- Agar apny handsoff input filters use keye hain tw ye mutated bhi ho sakta hay (yani input mein changing).
+- Type: `str | list[TResponseInputItem]`.
+
+#### new_items
+- Agent run ky time  generate hony waly events (like: tool calls, tool outputs, message, etc).
+- Type: `list[RunItem]`.
+
+#### raw_responses
+- Jo LLM sy **raw responses** aye (unparsed, Jesy API ny bheja)
+- Debugging ke leye useful hay.
+- Type: `list[ModelResponse]`.
+
+#### final_output
+- Jo last agent ka final validated ouput aya ho.
+- Type: `Any`.
+
+#### input_guardrail_results
+- Agar Input guardrials hay tw usky results (pass/fail ya koi trigger).
+- Type: `list[InputGuardrailResult]`.
+
+#### output_guardrail_results
+- Agar Output guardrials hay tw usky results (pass/fail ya koi trigger).
+- Type: `list[OutputGuardrailResult]`.
+
+#### context_wrapper
+- Context wrapper jo agent run ky state aur contet ko manage karta hay.
+- Type: `RunContextWrapper[Any]`.
+
+
+### 🔸 Properties & Methods
+#### last_agent
+`abstractmethod property`
+- Ye method batata hay keh konsa agent last tha.
+
+#### last_response_id
+- Last model ki response ki ID.
+- Converation ka flow track karny ka shortcut.
+
+#### final_output_as(cls, raise_if_incorrect_type=False)
+Agar ap `raise_if_incorrect_type` ko `True` set karen tw final output deye gaye type ka na ho tw **TypeError** raise keya jayega.
+
+#### to_input_list()
+Ek nayi input list banata hay jo, merge karta hay orignal input aur new items ko.
+
+---
+
+### 🔸 RunResult
+`dataclass`
+Ye ek datacla hay jo actual mein run ka result privide karta hay, Ye class `RunResultBase` sy inherit karky banaye gaye hay. Yani ismein wo sary attribute aur method hain jo `RunResultBase` base mein hain. Aur is mein iksy ilawa bhi properties hain.
+
+### 🔸Instance Attributes
+#### last_agent
+- Ye property batate hay keh last agent konsa run huwa.
+- Agar workflow mein multiple Handsoffs huwy tw ye property batati hay keh last agent konsa run huwa.
+
+#### input
+- Inherited from RunResultBase.
+- See the RunResultBase **input** Property for details.
+
+#### new_items
+- Inherited from RunResultBase.
+- See the RunResultBase **new_items** Property for details.
+
+#### raw_responses
+- Inherited from RunResultBase.
+- See the RunResultBase **raw_responses** Property for details.
+
+#### final_output
+- Inherited from RunResultBase.
+- See the RunResultBase **final_output** Property for details.
+
+#### input_guardrail_results
+- Inherited from RunResultBase.
+- See the RunResultBase **input_guardrail_results** Property for details.
+
+#### output_guardrail_results
+- Inherited from RunResultBase.
+- See the RunResultBase **output_guardrail_results** Property for details.
+
+#### context_wrapper
+- Inherited from RunResultBase
+- See the RunResultBase **context_wrapper** Property for details.
+
+#### last_response_id
+- Inherited from RunResultBase.
+- See the RunResultBase **last_response_id** Property for details.
+
+
+### 🔸 Properties & Methods
+#### final_output_as(cls, raise_if_incorrect_type=False)
+- Inherited from RunResultBase.
+- See the RunResultBase **final_output_as** method for details.
+
+#### to_input_list()
+- Inherited from RunResultBase.
+- See the RunResultBase **to_input_list()** method for details.
+
+---
+
+### 🔸 Simple Analogy
+RunResultBase ek **blue print/skeleton** hay jisko RunResult inherit karky output banata hay
+
+
+| Feature                                             | RunResultBase | RunResult   |
+| --------------------------------------------------- | ------------- | ----------- |
+| last\_agent                                         | abstract      | implemented |
+| input / new\_items / raw\_responses / final\_output | defined       | inherited   |
+| context\_wrapper                                    | defined       | inherited   |
+| final\_output\_as / to\_input\_list                 | defined       | inherited   |
+| last\_response\_id                                  | defined       | inherited   |
+
 
 ---
 
