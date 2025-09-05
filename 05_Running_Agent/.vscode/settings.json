@@ -1,0 +1,28 @@
+{
+  // 🔹 Auto Save (save automatically after delay)
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  // 🔹 Format code automatically on save
+  "editor.formatOnSave": true,
+  // 🔹 Show spaces, tabs, line endings (helpful for debugging)
+  "editor.renderWhitespace": "all",
+  "editor.renderControlCharacters": true,
+  // 🔹 Indentation settings
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true, // use spaces instead of tabs
+  // 🔹 Word wrap (long lines wrap automatically)
+  "editor.wordWrap": "on",
+  // 🔹 Minimap (disable if distracting)
+  "editor.minimap.enabled": false,
+  // 🔹 Auto imports & code actions
+  "javascript.suggest.autoImports": true,
+  "typescript.suggest.autoImports": true,
+  // 🔹 Enable breadcrumbs (navigation at top of editor)
+  "breadcrumbs.enabled": true,
+  // 🔹 Show git changes in gutter
+  "git.decorations.enabled": true,
+  // 🔹 Trim extra spaces automatically
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true
+}

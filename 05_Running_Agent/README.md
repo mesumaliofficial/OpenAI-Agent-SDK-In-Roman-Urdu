@@ -1,7 +1,7 @@
 ## 🔹 Running Agents
 
 Ap agent ko Runner class ki madad se chalate hain. Apke pass 3 options hoty hain Agent run karwany ky leye:
-- `Runner.run()` → Ye asynchronous method hay jo agent ko run karta hai aur `RunResult` return karta hay. 
+- `Runner.run()` → Ye asynchronous method hay jo agent ko run karta hai aur `RunResult` return karta hay.
 - `Runner.run_sync()` → Ye synchronous method hai jo internally `.run()` ko call karta hai, matlab jab tak process complete na ho, control wapas nahi aata.
 - `Runner.run_streamed()` → Ye asynchronous method hai jo streaming mode mein run karta hai. `RunResultStreaming` return karta hai. ye LLM ko streaming mode mein call karta hay. jesy hi events receive hota hay user ko foran bhj deta hay. (jesy ChatGPT mein hota hai).
 
@@ -95,8 +95,8 @@ Ye ek synchronous wrapper hay jo `Runner.run()` ko call karta hay. Matlab ap age
 ---
 
 ### 🔸 .run_streamed()
-Ye method workflow ko streaming mode mein chalata hay.  
-Matlab Agent ka pura process ek hi bar result return karny ky bajaye, step-by-step **events** ko stream karta hay.  
+Ye method workflow ko streaming mode mein chalata hay.
+Matlab Agent ka pura process ek hi bar result return karny ky bajaye, step-by-step **events** ko stream karta hay.
 jo result object return hota hay usme `stream()` method hota hay jiska use karky ap sementic events ya partial output ko realtime mein receive kar sakty hain.
 - stream() ek async iterator return karta hay, isleye isko **async for loop** ke sath use karna hota hay.
 
@@ -117,12 +117,12 @@ Ek run result object jisme:
 ---
 
 ### 🔸 RunResultBase
-`dataclass`  
+`dataclass`
 Ye ek abstract base class hay (ABC) jo sabhi `RunResult` ky leye common structure banati hay. Matlab isky andar wo **fields** hain aur **methods** hain jo har result mein zaroor hona chahiye.
 
 ### 🔸 Instance Attributes
 
-#### input 
+#### input
 - Jo apny Agent ko deya koi sawal ya query.
 - String ho sakta hay ya list of `TResponseInputItem`.
 - Agar apny handsoff input filters use keye hain tw ye mutated bhi ho sakta hay (yani input mein changing).
@@ -239,48 +239,81 @@ RunResultBase ek **blue print/skeleton** hay jisko RunResult inherit karky outpu
 
 ---
 
----
-### 🔸 Workflow by Daigram
+### 🔸RunResultStreaming
+`dataclass` Bases: `RunResultBase`
+`RunResultStreaming` extends **RunResultBase** Ye agent Runner ka result hota hay streaming mode mein kam karata hay. Ye agent ke run ke time step-by-step **semantic events** ko receive karny ki facility deta hai.
 
-[User Input / Initial Query]
-           │
-           ▼
-      [Runner.run() / run_sync / run_streamed]
-           │
-           ▼
-     ┌───────────────┐
-     │ Agent Process │
-     │---------------│
-     │ LLM / Tools   │
-     │ - Input process hota hai
-     │ - Tool calls run hote hain
-     │ - Handoff check hota hai
-     │ - Output generate hota hai
-     └───────────────┘
-           │
-           ▼
- ┌────────────────────────────┐
- │ RunResultBase Store         │
- │----------------------------│
- │ input                      │ ← Original ya mutated input
- │ new_items                  │ ← Intermediate events (messages, tool outputs, etc)
- │ raw_responses              │ ← Raw LLM outputs (unparsed)
- │ final_output               │ ← Validated final output
- │ input_guardrail_results    │ ← Input checks (pass/fail/triggers)
- │ output_guardrail_results   │ ← Output checks (pass/fail/triggers)
- │ context_wrapper            │ ← Execution context / state
- │ last_agent                 │ ← Last agent that ran
- │ last_response_id           │ ← Last model response ID
- └────────────────────────────┘
-           │
-           ▼
-      [Next Steps / Actions]
-      - Result return hota hai caller ko
-      - Handoff hua tw next agent ko feed kiya jata hai
-      - Agar .run_streamed() use hua, tw semantic events stream hote hain
+#### Exception
+- Same as `run` method Exceptions.
 
+### 🔸Instance Attributes
+#### current_agent
+- Wo agent jo currently run ho raha ho.
+- Type: `current_agent: Agent[Any]`
 
----
+#### current_turn
+- Konsa turn abhi chal raha hay uska number.
+- Type: `int`
+
+#### max_turns
+- Maximum turns limit jitni dafa agent run ho akta hay. Agar exceed hui to `MaxTurnsExceeded` exception raise hogi.
+- Type: `int`
+
+#### final_output
+- Agent ka final output. Ye None hota hay jab tak agent run complete na ho jaye.
+- Type: `Any`
+
+#### is_complete
+- Ye check karta hay streaming khatam huwi ya nh
+- Type: `bool (default False)`
+
+#### input
+- Inherited from RunResultBase.
+- See the RunResultBase **input** Property for details.
+
+#### new_items
+- Inherited from RunResultBase.
+- See the RunResultBase **new_items** Property for details.
+
+#### raw_responses
+- Inherited from RunResultBase.
+- See the RunResultBase **raw_responses** Property for details.
+
+#### input_guardrail_results
+- Inherited from RunResultBase.
+- See the RunResultBase **input_guardrail_results** Property for details.
+
+#### output_guardrail_results
+- Inherited from RunResultBase.
+- See the RunResultBase **output_guardrail_results** Property for details.
+
+#### context_wrapper
+- Inherited from RunResultBase.
+- See the RunResultBase **context_wrapper** Property for details.
+
+### 🔸 Properties & Methods
+#### last_agent
+- Inherited from RunResultBase.
+- See the RunResultBase **last_agent** Property for details.
+
+#### last_response_id
+- Inherited from RunResultBase.
+- See the RunResultBase **last_agent** Property for details.
+
+#### cancel()
+- Ye method tab use hota hay jab apny ek streaming agent run chalaya huwa hay `.run_streamed()` sy, aur ap chahty ho ke us process ko bech me hi stop kar do.
+- Type: `() -> None`
+
+**Use Case Example:** User ek long-running streaming process chala raha ho jo continuously events produce kar raha ho. Agar user manually stop button press kary ya timeout ho jaye → aap cancel() method ko call kar ky run ko terminate kar dety ho.
+
+#### stream_events (async)
+- Ye naye items ke deltas ko stream karta hay jab wo generate hoty hain.
+- Ye OpenAI Responses API events format ka use karta hay. Har event ka ek type aur data hota hay jo event ka type batata hai, aur us event ka data.
+- **Exceptions**:
+    - MaxTurnsExceeded → agar turns limit cross ho jaye.
+    - GuardrailTripwireTriggered → agar guardrail trigger ho jaye.
+- Type: `AsyncIterator[StreamEvent]`
+
 
 ### 🔸 The agent Loop
 jab ap `Runner` mein `run` method use karty ho, tw ap 2 arugument pass karty hain, **starting agent** aur **input**, input ya tw ek string hoga (jesy user message) ya phr item ki list jo OpenAI Responses API ke items hoty hain,
@@ -289,7 +322,7 @@ Phir Runner ek loop chalata hay:
 
 1. Hum current agent ky leye LLM ko call karty hain current input ky sath.
 2. LLM apna output generate karta hay.
-    - Agar LLM `final_output` return karta hay. tw loop stop hojata hay aur result return karta hay.  
+    - Agar LLM `final_output` return karta hay. tw loop stop hojata hay aur result return karta hay.
     - Agar LLM Handoff karta hay, tw current agent aur input update hoty hain, aur loop again run hota hay.
     - Agar LLM tool calls karta hay, tw wo tool calls run hoty hain result input mein append hota hay aur phr dubara sy loop chalta hay.
 3. Agar hum `max_turns` set karty hain aur wo exceed ho jata hai, to `MaxTurnsExceeded` exception milti hai.
@@ -310,9 +343,9 @@ Phir Runner ek loop chalata hay:
 **Temperature:**
 - Ye control karta hay randomness ya creativity ko.
 - agar temperature low hay (jesy 0.1) tw output zyada determeinistic (predictable) hoga yani exact jawab hoga
-- agar temperature high hay (jesy 0.8 ya 1.0) tw output random aur creative hoga, yani model naya ya unpredictable ans dy sakta hay  
+- agar temperature high hay (jesy 0.8 ya 1.0) tw output random aur creative hoga, yani model naya ya unpredictable ans dy sakta hay
 
-**top_p:** 
+**top_p:**
 - ye ek probability threshold (had) hota hay.
 - Model sirf un words mein sy choose karta jinka cumulative (majuma) probability (imkaan) `top_p` (jesy 0.9) ke andar aati hay.
 - Is sy model ka zyada focus rehta hay, aur extreme rear words exclude ho jaty hain.
@@ -326,10 +359,10 @@ Phir Runner ek loop chalata hay:
 
 **`trace_include_sensitive_data`:** Ye decide karta hay ke tracing (jo run ky time track karta hay) mein sensitive data shamil hoga ya nh
 
-**Sensitive data jesy:**  
-- LLM ke inputs aur outputs (jo user ne likha ya model ne jawab diya)  
-- Tool calls ke inputs aur outputs (jo extra tools use hote hain run mein)  
-Agar ye setting **True** hay tw traces mein sensitive data bhi record hoga.  
+**Sensitive data jesy:**
+- LLM ke inputs aur outputs (jo user ne likha ya model ne jawab diya)
+- Tool calls ke inputs aur outputs (jo extra tools use hote hain run mein)
+Agar ye setting **True** hay tw traces mein sensitive data bhi record hoga.
 Agar ye setting **False** hogi, tw sensitive data trace sy exclude kardeya jayega taky privacy aur safety barh jaye.
 
 **`workflow_name, trace_id, group_id`:** ye tracing ky leye important identifiers hain jo run ko uniquely track karny aur organize karny mein help karta hay.
@@ -340,7 +373,7 @@ Agar ye setting **False** hogi, tw sensitive data trace sy exclude kardeya jayeg
 
 - **group_id:** Ye optional hota hay aur multiple runs ke traces ko ek group mein link karny ky leye hota hay. Matlab agar apky pass zyada runs hain jo related hain tw unhy group_id sy ek sath track kar sakty hain.
 
-**`trace_metadata`:** Sary traces mein shamil karne ke liye metadata.  
+**`trace_metadata`:** Sary traces mein shamil karne ke liye metadata.
 - wo extra information hoti hay jo ap har tracing record ky sath add karty hain.
 - Iska matlab: Jab bhi tracing data save hota hai (jaise run ke details), aap kuch additional details (metadata) bhej sakte hain jo har trace mein shamil ho.
 
