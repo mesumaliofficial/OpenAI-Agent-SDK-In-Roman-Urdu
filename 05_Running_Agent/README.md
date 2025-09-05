@@ -314,6 +314,15 @@ RunResultBase ek **blue print/skeleton** hay jisko RunResult inherit karky outpu
     - GuardrailTripwireTriggered → agar guardrail trigger ho jaye.
 - Type: `AsyncIterator[StreamEvent]`
 
+#### final_output_as(cls, raise_if_incorrect_type=False)
+- Inherited from RunResultBase.
+- See the RunResultBase **final_output_as** method for details.
+
+#### to_input_list()
+- Inherited from RunResultBase.
+- See the RunResultBase **to_input_list()** method for details.
+
+---
 
 ### 🔸 The agent Loop
 jab ap `Runner` mein `run` method use karty ho, tw ap 2 arugument pass karty hain, **starting agent** aur **input**, input ya tw ek string hoga (jesy user message) ya phr item ki list jo OpenAI Responses API ke items hoty hain,
