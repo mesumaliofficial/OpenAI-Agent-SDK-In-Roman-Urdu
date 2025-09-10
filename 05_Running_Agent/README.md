@@ -70,7 +70,7 @@ Ek run result object jisme:
 
 ### 🔸 .run_sync()
 Ye ek synchronous wrapper hay jo `Runner.run()` ko call karta hay. Matlab ap agent ko blocking mode me run kara sakty ho.
-- Ye async environments (e.g. Jupyter Notebook, FastAPI, asyncio loop) me work nahi karega.
+- Ye async environments (e.g. Jupyter Notebook asyncio loop) me work nahi karega.
 
 #### Loop ka Flow
 - Same as `run` method loop flow.
@@ -97,7 +97,7 @@ Ye ek synchronous wrapper hay jo `Runner.run()` ko call karta hay. Matlab ap age
 ### 🔸 .run_streamed()
 Ye method workflow ko streaming mode mein chalata hay.
 Matlab Agent ka pura process ek hi bar result return karny ky bajaye, step-by-step **events** ko stream karta hay.
-jo result object return hota hay usme `stream()` method hota hay jiska use karky ap sementic events ya partial output ko realtime mein receive kar sakty hain.
+jo result object return hota hay usme `stream_events()` method hota hay jiska use karky ap sementic events ya partial output ko realtime mein receive kar sakty hain.
 - stream() ek async iterator return karta hay, isleye isko **async for loop** ke sath use karna hota hay.
 
 #### Loop ka Flow
@@ -150,7 +150,7 @@ Ye ek abstract base class hay (ABC) jo sabhi `RunResult` ky leye common structur
 - Type: `list[OutputGuardrailResult]`.
 
 #### context_wrapper
-- Context wrapper jo agent run ky state aur contet ko manage karta hay.
+- Context wrapper jo agent run ky state aur content ko manage karta hay.
 - Type: `RunContextWrapper[Any]`.
 
 
@@ -173,7 +173,7 @@ Ek nayi input list banata hay jo, merge karta hay orignal input aur new items ko
 
 ### 🔸 RunResult
 `dataclass`
-Ye ek datacla hay jo actual mein run ka result privide karta hay, Ye class `RunResultBase` sy inherit karky banaye gaye hay. Yani ismein wo sary attribute aur method hain jo `RunResultBase` base mein hain. Aur is mein iksy ilawa bhi properties hain.
+Ye ek dataclass hay jo actual mein run ka result provide karta hay, Ye class `RunResultBase` sy inherit karky banaye gaye hay. Yani ismein wo sary attribute aur method hain jo `RunResultBase` base mein hain. Aur is mein isky ilawa bhi properties hain.
 
 ### 🔸Instance Attributes
 #### last_agent
@@ -239,9 +239,9 @@ RunResultBase ek **blue print/skeleton** hay jisko RunResult inherit karky outpu
 
 ---
 
-### 🔸RunResultStreaming
-`dataclass` Bases: `RunResultBase`
-`RunResultStreaming` extends **RunResultBase** Ye agent Runner ka result hota hay streaming mode mein kam karata hay. Ye agent ke run ke time step-by-step **semantic events** ko receive karny ki facility deta hai.
+### 🔸RunResultStreaming  
+`dataclass` Bases: `RunResultBase`  
+`RunResultStreaming` extends **RunResultBase** Ye Runner ka result hota hay streaming mode mein kam karta hay. Ye agent ke run ke time step-by-step **semantic events** ko receive karny ki facility deta hai.
 
 #### Exception
 - Same as `run` method Exceptions.
@@ -256,7 +256,7 @@ RunResultBase ek **blue print/skeleton** hay jisko RunResult inherit karky outpu
 - Type: `int`
 
 #### max_turns
-- Maximum turns limit jitni dafa agent run ho akta hay. Agar exceed hui to `MaxTurnsExceeded` exception raise hogi.
+- Maximum turns limit jitni dafa agent run ho sakta hay. Agar exceed hui to `MaxTurnsExceeded` exception raise hogi.
 - Type: `int`
 
 #### final_output
@@ -298,13 +298,13 @@ RunResultBase ek **blue print/skeleton** hay jisko RunResult inherit karky outpu
 
 #### last_response_id
 - Inherited from RunResultBase.
-- See the RunResultBase **last_agent** Property for details.
+- See the RunResultBase **last_response_id** Property for details.
 
 #### cancel()
 - Ye method tab use hota hay jab apny ek streaming agent run chalaya huwa hay `.run_streamed()` sy, aur ap chahty ho ke us process ko bech me hi stop kar do.
 - Type: `() -> None`
 
-**Use Case Example:** User ek long-running streaming process chala raha ho jo continuously events produce kar raha ho. Agar user manually stop button press kary ya timeout ho jaye → aap cancel() method ko call kar ky run ko terminate kar dety ho.
+**Use Case Example:** User ek long-running streaming process chala raha ho jo continuously events produce kar raha ho. Agar user manually stop button press kary tw → ap cancel() method ko call kar ky run ko terminate kar sakty ho.
 
 #### stream_events (async)
 - Ye naye items ke deltas ko stream karta hay jab wo generate hoty hain.
