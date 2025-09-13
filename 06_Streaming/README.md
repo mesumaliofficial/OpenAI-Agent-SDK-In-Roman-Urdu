@@ -200,9 +200,15 @@ class RunItemStreamEvent:
 - **`type`**
     - Iski type fix hoti hay: "`agent_updated_stream_event`"
     - iska sirf ye hay keh ap identify kar sako ke yeh event agent update ka hai, na ke raw response ya run item ka.
+
+### 🔸 AgentUpdatedStreamEvent
+Imagine karen apki ek project team hay.
+- Pehly **Agent A** kam kar raha tha.
+- Ab wo apna kam karky **Agent B** ko dedeta hay.
+- Jesy hi Agent B active hota hay, apko ek notification ati hay: "Naya agent start ho gaya hay."
+Wo notification `AgentUpdatedStreamEvent` Hay.
+
 ---
-
-
 
 ### Resources & Practical Demos
 
