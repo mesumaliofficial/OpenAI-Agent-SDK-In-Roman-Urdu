@@ -212,4 +212,4 @@ Wo notification `AgentUpdatedStreamEvent` Hay.
 
 ### Resources & Practical Demos
 
-- [OpenAI Agent Streaming Method Colab Notebook]() → Interactive example with code and usage.
+- [OpenAI Agent Streaming Method Colab Notebook](https://colab.research.google.com/drive/1pDhr55JygmQisEa9nsDFGuBenZVpwal8?usp=sharing) → Interactive example with code and usage.
