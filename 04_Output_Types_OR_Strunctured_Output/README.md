@@ -1,17 +1,23 @@
 ## 🔹 Agents → Output Types
 
+### 🔸What is Output Types?
 
-### 🔸Output Types
-- By default, agent plain text yani (str) output deta hai.
-- Lekin agar aap chahen ke agent kisi specific type ka output de, to aap `output_type` parameter ka use karke output ki type define kar sakte hain.
-- Ek common choice hoti hai ke `Pydantic object` ka use kiya jaye.
-- Iske ilawa, agent kisi bhi type ka object support karta hai jo Pydantic TypeAdapter mein wrap ho sakta ho. jesy: dataclasses, lists, TypedDict, etc.
+Agent output types wo hoti hain jo batati hain keh agent ka final output kis tarha ka hoga. By default, agent plain text yani (str) output deta hay. Lekin Kabhi-Kabhi hume ek special organize format mein data chahiye hota hay.
 
-```bash 
+**For Example:**  
+Hume ek email sy sary phone numbers nikalny hain, tw plain text (str) mein number ko find karna mushkil hoga. Isky bajaye, ager Agent output ko ek **list of string** (`list(str)`) mein dy, tw kam asan hojata hay.
+
+---
+
+### 🔸Structured Outputs
+
+Jab hum `output_type` parameter ka use karty hain, tw **Agent Structured output** mode mein chala jata hay, iska matlab hay wo plain text ky bajaye **JSON** object return karyga.
+
+```python
 from pydantic import BaseModel
-from agents import Agent
+from google.generativeai.agent import Agent
 
-
+# Yeh humne ek Pydantic model banaya hai. Yeh humara blueprint hay.
 class CalendarEvent(BaseModel):
     name: str
     date: str
@@ -20,117 +26,62 @@ class CalendarEvent(BaseModel):
 agent = Agent(
     name="Calendar extractor",
     instructions="Extract calendar events from text",
-    output_type=CalendarEvent,
+    output_type=CalendarEvent, # Yahan humne blueprint de diya
 )
 ```
-**Note:** Jab output type ka use karty hain, tw yeh model ko batata hay ke wo regular plain text ky bajaye [structured output](https://platform.openai.com/docs/guides/structured-outputs) ka use kare.
 
-
-### 🔸What is Structured Output ?
-Structure Output ek feature hay jis ka matlab hay ap model ko force karty ho keh uska jawab **ek spcific struture/schema** ky according generate ho jesy: (JSON object, dictionary, list, etc). is tarha apko ye fiqar nh hoti keh model koi required key chordy ya phir koi invalid enum value hallunicate kardy.
-
-**Usecase:** Ye feature APIs, agents, aur applications banate waqt use hota hai jahan apko reliable aur valid data chahiye hota hai.
-
-### 🔸Simple Analogy: The Order Form  
-**Without Structured Output (Messy):**  
-- User: "Mujhy Newyork ky weather ky bary mein btao"
-- Agent: "Aj kafi acha mausam hay, shayad 75 degrees aur dhoop hai New York mein"
-- User: "Main temperature kaise nikalun? Kaunsa shehar hai? Ye Fahrenheit hai ya Celsius?"
-
-**With Structured Output (Perfect):**  
-- User: "Mujhy Newyork ky wather ky bary mein btao"
-- Agent: `{"location": "New York", "temperature_c": 24, "summary": "sunny"}`
-- User: "Perfect! Ye data ab mein directly apni app mein use kar sakta hun!"
+Is code mein, jab hum Agent ko is jesa "Friday ko meeting hay 3 bjy Haider aur Ali ky sath" koi text dengy, tw wo is text sy data nikal kar `CalendarEvent` ky format mein dega. Yani ek JSON object jis mein `name`, `date` aur `participants` fields honge.
 
 ---
 
-### 🔸The Core Concept
-**Case 1: Agent returns plain text (hard to parse)**
-```python
-# Agent returns free-form text
-result = Runner.run_sync(agent, "What's the weather in Karachi?")
-print(result.final_output)
-# Example Output:
-# "The weather in Karachi is quite warm today, around 30 degrees Celsius with clear skies."
+### 🔸What is AgentOutputSchemaBase?
 
-# ❌ Problem:
-# Output text hai → location, temperature ya summary ko extract kesy karen!
-```
+`AgentOutputSchemaBase` ek **abstract base class** hay. Abstract class ka matlab hay hum isko directly use nahi kar sakty, bulky iski properties dusri class use karte hain. Ye ek tarha sy **contract** hay.
 
-**Case 2: Agent returns structured data (easy to use)**
-```python
-# Agent returns structured data
-class WeatherAnswer(BaseModel):
-    location: str
-    temperature_c: float
-    summary: str
+Is contract ke andar kuch rules (abstract method) hain jesy:
 
-agent = Agent(output_type=WeatherAnswer)
-result = Runner.run_sync(agent, "What's the weather in Karachi?")
+- `is_plain_text() -> bool:` ye batata hay keh output plain text hoga ya nh
 
-# Perfect! Ab output structured format mein milta hai → directly access kar sakte ho.:
-print(result.final_output.location)      # "Karachi"
-print(result.final_output.temperature_c) # 30.0
-print(result.final_output.summary)       # "clear skies"
-```
+- `name() -> str:` Output type ka naam batata hay.
+
+- `json_schema() -> dict[str, Any]:` Output type ka JSON schema (blueprint) batata hai.
+
+- `is_strict_json_schema() -> bool:` Ye batata hay keh Agent is time **strict mode** mein hay ya nahi. Jab yeh `True` return karega, iska matlab hai ke Agent ko **strict rules** follow karny hain.
+
+- `validate_json(json_str: str) -> Any:` Ye check karta hay keh LLM ny jo JSON diya wo blueprint ky according hay ya nahi. agar nahi hay tw error dega. 
+
+Ye sab properties Agent SDK ke andar automatically handle hote hain, jab hum output_type mein koi Pydantic model ya koi aur type pass karty hain.
 
 ---
 
-### 🔸How Structured Output Works ?
-Structured output use karny par agent backend mein yeh kam karta hay:
-1. **Schema samajhta hai:** Agent ko Exactly malum hota hay keh konsi fields mein kya fill karna hay.
-2. **Data validate karta hai:** Ensure karta hay jo bhi apny fields banaye hain wo sary present ho.
-3. **Correct format deta hai:** Data usi structure mein return hota hay jo apny specify keya ho.
-4. **Type check karta hai:** Jo types apne apny object mein dee hay fully ensure karta hay usi type ka ho.
+### 🔸Konsi Output Types Use Kar Sakte Hain?
 
-```python
-# What happens automatically:
-class PersonInfo(BaseModel):
-    name: str          # Must be text
-    age: int           # Must be a whole number
-    email: str         # Must be text
-    is_student: bool   # Must be True/False
+Agent SDK bohut flxible hay, Ap `output_type` mein bohut si tarha ki python types dy sakty hain, jo pydantic `TypeAdapter` mein wrap ho saken
 
-# Agent MUST return data in this exact format
-# If it tries to return invalid data, it gets corrected automatically!
-```
+1. **Pydantic Models (BaseModel):** Ye sab sy best aur common tareqa hay **structured data** ky leye Yeh validation aur schema generation provide karta hay.
 
-### 🔸Pydantic Models → Your Data Blueprint
-| **Component**        | **Kya karta hai**                   | **Example**                               |
-| -------------------- | ----------------------------------- | ----------------------------------------- |
-| **Class Definition** | Data structure define karta hai     | `class WeatherInfo(BaseModel):`           |
-| **Field Types**      | Batata hai field ka type kya hoga   | `temperature: float`                      |
-| **Required Fields**  | Ye fields lazmi hone chahiye        | By default, sab fields required hoti hain |
-| **Optional Fields**  | Ye fields missing bhi ho sakti hain | `rainfall: Optional[float] = None`        |
+2. **Dataclasses:** Agar hum pydantic use nahi karna chaht, tw python ki built-in `dataclass` bhi use kar sakty hain.
 
+3. `TypedDict:` Ye simple dictionaries ke leye type define karny mein kam ate hay.
 
-<br/>
-
-> **Note:** OpenAI mein Structured Outputs srf latest LLMs mein available hain. Jo shuru hoty hain **GPT-4o** sy. jo purany version hain jesy **GPT-4-turbo** un mein structure output direct support nh karta wahan **Json mode** use karnna parta hay.
-
----  
-
-### 🔸Output Types → Api Refrences
-```python
-output_type: type[Any] | AgentOutputSchemaBase | None = None
-```
-Ye option decide karta hay keh agent ka output kis type ka object hoga.
-- Agar aap kuch bhi na do, to **default string (str)** return hoge.
-- Zyada cases mein aapko Python ka koi structured type use karna chahiye (jaise `dataclass`, `Pydantic model`, `TypedDict`, etc.) taa keh output organized aur predictable aaye.
-
-1. **Non-strict Schema**   
-Agar apko thora flexible output chahiye (matlab model chhoti-moti format ki galtiya ignore kar dy aur data accept kar ly), tw `AgentOutputSchema(MyClass, strict_json_schema=False)` use karo.
-
-2. **Custom Schema**
-Agar apko apna khud ka schema banana hai (SDK ka auto-schema use kiye bina), to ek class banao jo AgentOutputSchemaBase se inherit kare aur usko pass kar do.
-
-#### Example:
-Strict => Agar schema mein `title: str, price: float` likha hay, aur agent price string bana de "10" instead of 10.0, to error aayega.
-
-Non-Strcit => Agar agent thora format different bana de (e.g. string instead of float), to SDK usko accept kar lega aur internally try karega correct karny ki. 
+4. **Built-in types:** Simple cases mein ap Python ki built-in types bhi dy sakty hain, jesy `list[str]`, `dict[str, int]`, ya `int`.
 
 ---
 
+### 🔸What is AgentOutputSchema?
+Ek worker hay jo `AgentOutputSchemaBase` ky sary rules ko implement karta hay. Iska kam apky deye huwy **output type** ko leker LLM ke leye ek actionable blueprint banana aur phir us blueprint ky according LLM ky output ko validate karna hay.
+
+Sochen, Jab ap agent ko `output_type=CalendarEvent` hain tw, backend per ye hota hay.
+
+1. Ek `AgentOutputSchema` ka object banta hai. Is object ko `CalendarEvent` class de di jati hai.
+
+2. Ye object `json_schema()` method ko call karta hay. Isse `CalendarEvent` ka JSON blueprint ban jata hai. Yeh blueprint LLM ko batata hay keh output mein name (string), date (string), aur participants (list of strings) hona chahiye.
+
+3. LLM is blueprint ke according JSON banata hay.
+
+4. AgentOutputSchema phir validate_json() method ka use karta hay. Ye method LLM se aaye huwy JSON ko check karta hay. Agar JSON sahi hay, tw ye usy Python object (`CalendarEvent`) mein convert kar deta hay. Agar mistake hay, tw ye ek error dega.
+
+---
 
 ### 🔸Resources & Practical Demos
 
