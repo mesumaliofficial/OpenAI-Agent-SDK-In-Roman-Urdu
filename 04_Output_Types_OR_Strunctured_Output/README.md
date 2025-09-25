@@ -69,17 +69,17 @@ Agent SDK bohut flxible hay, Ap `output_type` mein bohut si tarha ki python type
 ---
 
 ### 🔸What is AgentOutputSchema?
-Ek worker hay jo `AgentOutputSchemaBase` ky sary rules ko implement karta hay. Iska kam apky deye huwy **output type** ko leker LLM ke leye ek actionable blueprint banana aur phir us blueprint ky according LLM ky output ko validate karna hay.
 
-Sochen, Jab ap agent ko `output_type=CalendarEvent` hain tw, backend per ye hota hay.
+AgentOutputSchema ek dataclass wrapper hay jo AgentOutputSchemaBase ko inherit karky banaye gaye hay.
 
-1. Ek `AgentOutputSchema` ka object banta hai. Is object ko `CalendarEvent` class de di jati hai.
+**Purpose:**
 
-2. Ye object `json_schema()` method ko call karta hay. Isse `CalendarEvent` ka JSON blueprint ban jata hai. Yeh blueprint LLM ko batata hay keh output mein name (string), date (string), aur participants (list of strings) hona chahiye.
+- Ye class LLM ke structured output ko handle karny ke liye use hoti hay.
 
-3. LLM is blueprint ke according JSON banata hay.
+- Apko manually parsing aur validation ke liye methods likhne ki zarurat nahi hoti hay.
 
-4. AgentOutputSchema phir validate_json() method ka use karta hay. Ye method LLM se aaye huwy JSON ko check karta hay. Agar JSON sahi hay, tw ye usy Python object (`CalendarEvent`) mein convert kar deta hay. Agar mistake hay, tw ye ek error dega.
+- Ye automatically apky deye gaye model (Pydantic, dataclass ya TypedDict) sy JSON schema generate kar deti hay.
+
 
 ---
 
